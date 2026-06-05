@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocoa de Cacao — Postres saludables que se sienten como un verdadero antojo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ───────────── RESET & BASE ───────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+:root{
+  --cacao:#3C2415;
+  --cacao-light:#5C3A28;
+  --crema:#FDF6ED;
+  --crema-dark:#F5EBE0;
+  --almendra:#E8D5C4;
+  --almendra-light:#F2E6DA;
+  --cafe:#8B6914;
+  --cafe-tostado:#6B4F12;
+  --salvia:#7A9E7E;
+  --salvia-light:#A8C4AC;
+  --salvia-dark:#5A7E5E;
+  --text:#2C1810;
+  --text-light:#7A6B60;
+  --white:#FFFFFF;
+  --off-white:#FFFAF5;
+  --shadow-sm:0 1px 3px rgba(60,36,21,0.06);
+  --shadow-md:0 4px 16px rgba(60,36,21,0.08);
+  --shadow-lg:0 12px 40px rgba(60,36,21,0.1);
+  --radius-sm:8px;
+  --radius-md:16px;
+  --radius-lg:24px;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --max-w:1200px;
+  --nav-h:72px;
+  --transition:0.4s cubic-bezier(0.25,0.46,0.45,0.94)
+}
+::selection{background:var(--salvia);color:var(--white)}
+body{font-family:var(--font-sans);color:var(--text);background:var(--off-white);line-height:1.6;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+/* ───────────── THEME TOGGLE ───────────── */
+[data-theme="dark"]{
+  --cacao:#E8D5C4;
+  --cacao-light:#D4BFA8;
+  --crema:#1A110D;
+  --crema-dark:#241812;
+  --almendra:#3C2A20;
+  --almendra-light:#2E1E16;
+  --cafe:#D4A854;
+  --cafe-tostado:#C49A48;
+  --salvia:#8BB58F;
+  --salvia-light:#6A8E6E;
+  --salvia-dark:#A8C4AC;
+  --text:#F0E8DF;
+  --text-light:#B0A090;
+  --white:#1A110D;
+  --off-white:#221812;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.5)
+}
+/* ───────────── NAV ───────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-h);
+  background:rgba(255,250,245,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(60,36,21,0.06);
+  transition:var(--transition)
+}
+[data-theme="dark"] nav{
+  background:rgba(34,24,18,0.92);border-bottom-color:rgba(232,213,196,0.06)
+}
+.nav-inner{
+  max-width:var(--max-w);margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;height:100%
+}
+.logo{font-family:var(--font-serif);font-size:1.35rem;font-weight:600;color:var(--cacao);letter-spacing:-0.01em}
+[data-theme="dark"] .logo{color:var(--cacao)}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links a{
+  font-size:0.875rem;font-weight:450;color:var(--text-light);
+  transition:color var(--transition);position:relative;letter-spacing:0.01em
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;
+  background:var(--salvia);transform:scaleX(0);transition:transform var(--transition);
+  transform-origin:right
+}
+.nav-links a:hover{color:var(--cacao)}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-cta{
+  padding:8px 20px;border-radius:100px;background:var(--cacao);color:var(--crema);
+  font-size:0.875rem;font-weight:500;transition:var(--transition);border:1.5px solid transparent
+}
+.nav-cta:hover{background:transparent;color:var(--cacao);border-color:var(--cacao)}
+[data-theme="dark"] .nav-cta{background:var(--cacao);color:var(--crema)}
+[data-theme="dark"] .nav-cta:hover{background:transparent;color:var(--cacao);border-color:var(--cacao)}
+.theme-btn{
+  background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;
+  color:var(--text-light);transition:var(--transition);font-size:1.15rem;line-height:1
+}
+.theme-btn:hover{color:var(--cacao);background:rgba(60,36,21,0.06)}
+[data-theme="dark"] .theme-btn:hover{background:rgba(232,213,196,0.08)}
+.mobile-toggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--cacao)}
+.mobile-toggle span{
+  display:block;width:24px;height:2px;background:currentColor;margin:5px 0;
+  transition:var(--transition);border-radius:2px
+}
+/* ───────────── HERO ───────────── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;padding:var(--nav-h) 24px 0;
+  position:relative;overflow:hidden
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 40%, rgba(122,158,126,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 15% 60%, rgba(232,213,196,0.15) 0%, transparent 70%);
+  pointer-events:none
+}
+.hero-grid{
+  max-width:var(--max-w);margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center
+}
+.hero-content{z-index:2}
+.hero-badge{
+  display:inline-block;padding:6px 16px;border-radius:100px;
+  background:rgba(122,158,126,0.12);color:var(--salvia-dark);
+  font-size:0.75rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;
+  margin-bottom:24px
+}
+.hero h1{
+  font-family:var(--font-serif);font-size:clamp(2.5rem,5vw,4.2rem);
+  font-weight:600;line-height:1.1;color:var(--cacao);
+  letter-spacing:-0.02em;margin-bottom:20px
+}
+.hero h1 em{font-style:italic;color:var(--salvia-dark)}
+[data-theme="dark"] .hero h1 em{color:var(--salvia)}
+.hero h1 .ampersand{font-family:var(--font-serif);font-style:italic;font-weight:400;color:var(--cafe)}
+.hero-sub{
+  font-size:clamp(1rem,1.15vw,1.15rem);color:var(--text-light);
+  max-width:520px;line-height:1.65;margin-bottom:36px
+}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;border-radius:100px;
+  background:var(--cacao);color:var(--crema);
+  font-weight:500;font-size:0.95rem;transition:var(--transition);
+  border:1.5px solid var(--cacao);cursor:pointer
+}
+.btn-primary:hover{background:transparent;color:var(--cacao);transform:translateY(-1px)}
+[data-theme="dark"] .btn-primary{background:var(--cacao);color:var(--crema)}
+[data-theme="dark"] .btn-primary:hover{background:transparent;color:var(--cacao)}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;border-radius:100px;
+  background:transparent;color:var(--cacao);
+  font-weight:500;font-size:0.95rem;transition:var(--transition);
+  border:1.5px solid var(--almendra);cursor:pointer
+}
+.btn-secondary:hover{background:var(--almendra-light);transform:translateY(-1px)}
+.hero-image{
+  position:relative;z-index:2;display:flex;justify-content:center;align-items:center
+}
+.hero-img-wrapper{
+  position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-lg);aspect-ratio:4/5;width:100%;max-width:480px;
+  background:linear-gradient(135deg, var(--almendra-light), var(--crema-dark))
+}
+.hero-img-placeholder{
+  width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;
+  padding:24px;overflow:hidden;position:relative
+}
+.hero-img-placeholder .cacao-art{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 50% 40% at 30% 70%, var(--cacao) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 70% 60%, var(--cafe-tostado) 0%, transparent 60%),
+    radial-gradient(circle 15% at 50% 30%, var(--salvia-light) 0%, transparent 50%);
+  opacity:0.12
+}
+.hero-img-placeholder .plate{
+  position:relative;z-index:1;width:90%;height:70%;
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:linear-gradient(135deg, var(--cacao-light), var(--cacao));
+  box-shadow:0 4px 30px rgba(60,36,21,0.25);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:-10%
+}
+.hero-img-placeholder .plate-inner{
+  width:60%;height:60%;border-radius:50%;
+  background:radial-gradient(circle at 40% 40%, var(--crema-dark), var(--almendra));
+  box-shadow:inset 0 -4px 12px rgba(60,36,21,0.15);
+  position:relative
+}
+.hero-img-placeholder .plate-inner::after{
+  content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:2rem;color:var(--cafe-tostado);opacity:0.4
+}
+.hero-scroll{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:var(--text-light);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;
+  opacity:0.5;animation:float 3s ease-in-out infinite
+}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+/* ───────────── SECTIONS COMMON ───────────── */
+section{padding:100px 24px}
+.section-inner{max-width:var(--max-w);margin:0 auto}
+.section-label{
+  font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--salvia-dark);font-weight:500;margin-bottom:12px
+}
+[data-theme="dark"] .section-label{color:var(--salvia)}
+.section-title{
+  font-family:var(--font-serif);font-size:clamp(2rem,3.5vw,3rem);
+  font-weight:600;color:var(--cacao);line-height:1.15;
+  letter-spacing:-0.02em;margin-bottom:16px
+}
+.section-desc{
+  color:var(--text-light);font-size:1.05rem;max-width:580px;line-height:1.65
+}
+/* ───────────── PROPUESTA DE VALOR ───────────── */
+#propuesta{background:var(--crema)}
+[data-theme="dark"] #propuesta{background:var(--crema-dark)}
+.propuesta-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:56px
+}
+.valor-card{
+  position:relative;padding:40px 36px;border-radius:var(--radius-md);
+  transition:var(--transition);background:var(--off-white);
+  border:1px solid rgba(60,36,21,0.06)
+}
+[data-theme="dark"] .valor-card{border-color:rgba(232,213,196,0.06)}
+.valor-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.valor-card:first-child{grid-column:1/2;grid-row:1/3;display:flex;flex-direction:column;justify-content:center}
+.valor-card:nth-child(2){grid-column:2/3}
+.valor-card:nth-child(3){grid-column:2/3}
+.valor-icon{
+  width:44px;height:44px;border-radius:var(--radius-sm);
+  background:rgba(122,158,126,0.1);display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;font-size:1.3rem;color:var(--salvia-dark)
+}
+.valor-card h3{
+  font-family:var(--font-serif);font-size:1.3rem;font-weight:600;
+  color:var(--cacao);margin-bottom:8px
+}
+.valor-card p{color:var(--text-light);font-size:0.95rem;line-height:1.6}
+.valor-card:first-child .valor-icon{width:52px;height:52px;font-size:1.6rem}
+.valor-card:first-child h3{font-size:1.5rem}
+.valor-card:first-child p{font-size:1rem}
+/* ───────────── HISTORIA ───────────── */
+#historia{position:relative;overflow:hidden}
+#historia::before{
+  content:'';position:absolute;right:-20%;top:50%;transform:translateY(-50%);
+  width:50%;height:80%;
+  background:radial-gradient(ellipse, rgba(122,158,126,0.06) 0%, transparent 70%);
+  pointer-events:none
+}
+.historia-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center
+}
+.historia-texto .section-title{margin-bottom:24px}
+.historia-texto p{
+  color:var(--text-light);font-size:1.05rem;line-height:1.7;margin-bottom:16px
+}
+.historia-texto .firma{
+  margin-top:32px;padding-top:24px;border-top:1px solid var(--almendra);
+  font-family:var(--font-serif);font-style:italic;font-size:1.05rem;color:var(--cacao)
+}
+.historia-imagen{
+  border-radius:var(--radius-lg);overflow:hidden;
+  aspect-ratio:3/4;background:linear-gradient(135deg, var(--almendra-light), var(--crema-dark));
+  box-shadow:var(--shadow-lg);position:relative;display:flex;align-items:center;justify-content:center
+}
+.historia-imagen .decoration{
+  width:60%;height:70%;
+  background:linear-gradient(135deg, var(--salvia-light), transparent);
+  border-radius:50%;opacity:0.15;position:absolute
+}
+.historia-imagen .heart-icon{
+  font-size:3rem;color:var(--cacao);opacity:0.2;position:relative;z-index:1
+}
+/* ───────────── PRODUCTOS ───────────── */
+#productos{background:var(--crema)}
+[data-theme="dark"] #productos{background:var(--crema-dark)}
+.productos-header{margin-bottom:56px;text-align:center}
+.productos-header .section-desc{margin:0 auto}
+.productos-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px
+}
+.producto-card{
+  border-radius:var(--radius-md);overflow:hidden;
+  background:var(--off-white);border:1px solid rgba(60,36,21,0.06);
+  transition:var(--transition);cursor:pointer
+}
+[data-theme="dark"] .producto-card{border-color:rgba(232,213,196,0.06)}
+.producto-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.producto-img{
+  aspect-ratio:4/3;background:linear-gradient(135deg, var(--almendra-light), var(--crema-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;position:relative;overflow:hidden
+}
+.producto-img .pattern{
+  position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 30%, var(--cacao) 0%, transparent 40%),
+              radial-gradient(circle at 80% 70%, var(--cafe) 0%, transparent 30%);
+  opacity:0.08
+}
+.producto-body{padding:24px}
+.producto-body h3{
+  font-family:var(--font-serif);font-size:1.15rem;font-weight:600;
+  color:var(--cacao);margin-bottom:4px
+}
+.producto-body .categoria{
+  font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--salvia-dark);margin-bottom:8px
+}
+.producto-body p{font-size:0.88rem;color:var(--text-light);line-height:1.5}
+.tag{
+  display:inline-block;padding:3px 10px;border-radius:100px;
+  background:rgba(122,158,126,0.1);color:var(--salvia-dark);
+  font-size:0.7rem;font-weight:500;margin-top:12px;margin-right:4px
+}
+/* ───────────── FILOSOFIA ───────────── */
+#filosofia{
+  text-align:center;position:relative;
+  background:linear-gradient(180deg, var(--off-white), var(--crema), var(--off-white))
+}
+[data-theme="dark"] #filosofia{background:linear-gradient(180deg, var(--crema-dark), var(--off-white), var(--crema-dark))}
+.filosofia-frame{
+  max-width:720px;margin:0 auto;padding:80px 48px;
+  border:1px solid var(--almendra);border-radius:var(--radius-lg);
+  position:relative
+}
+[data-theme="dark"] .filosofia-frame{border-color:rgba(232,213,196,0.1)}
+.filosofia-frame::before,.filosofia-frame::after{
+  content:'"';position:absolute;
+  font-family:var(--font-serif);font-size:5rem;color:var(--almendra);
+  line-height:1
+}
+.filosofia-frame::before{top:-10px;left:24px}
+.filosofia-frame::after{bottom:-40px;right:24px;transform:rotate(180deg)}
+.filosofia-frame blockquote{
+  font-family:var(--font-serif);font-size:clamp(1.4rem,2.2vw,1.9rem);
+  font-style:italic;color:var(--cacao);line-height:1.45;margin-bottom:20px;
+  letter-spacing:-0.01em
+}
+.filosofia-frame .attribution{
+  color:var(--salvia-dark);font-size:0.85rem;font-weight:500;letter-spacing:0.04em
+}
+/* ───────────── LOCAL ───────────── */
+#local{
+  background:linear-gradient(135deg, var(--off-white), var(--crema))
+}
+[data-theme="dark"] #local{background:linear-gradient(135deg, var(--crema-dark), var(--off-white))}
+.local-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center
+}
+.local-info h3{font-family:var(--font-serif);font-size:1.5rem;font-weight:600;color:var(--cacao);margin-bottom:12px}
+.local-info p{color:var(--text-light);line-height:1.7;font-size:1rem;margin-bottom:16px}
+.local-direccion{
+  padding:20px 24px;border-radius:var(--radius-sm);
+  background:rgba(122,158,126,0.08);border-left:3px solid var(--salvia);
+  margin-top:24px
+}
+.local-direccion .label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--salvia-dark);margin-bottom:4px}
+.local-direccion .addr{font-size:0.95rem;color:var(--cacao);font-weight:450}
+.local-direccion .note{font-size:0.85rem;color:var(--text-light);margin-top:4px}
+.local-img{
+  border-radius:var(--radius-lg);overflow:hidden;
+  aspect-ratio:4/3;background:linear-gradient(135deg, var(--almendra-light), var(--salvia-light));
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;
+  position:relative
+}
+.local-img .map-markers{
+  position:relative;width:50%;height:50%;
+  display:flex;align-items:center;justify-content:center
+}
+.local-img .map-markers span{
+  position:absolute;font-size:2rem;opacity:0.2;color:var(--cacao)
+}
+.local-img .map-markers span:nth-child(1){top:10%;left:20%}
+.local-img .map-markers span:nth-child(2){top:30%;right:10%;font-size:1.5rem}
+.local-img .map-markers span:nth-child(3){bottom:20%;left:30%;font-size:1rem}
+/* ───────────── TESTIMONIALS ───────────── */
+#testimonios{background:var(--crema)}
+[data-theme="dark"] #testimonios{background:var(--crema-dark)}
+.testimonios-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px
+}
+.testimonio-card{
+  padding:36px;border-radius:var(--radius-md);
+  background:var(--off-white);border:1px solid rgba(60,36,21,0.06);
+  transition:var(--transition)
+}
+[data-theme="dark"] .testimonio-card{border-color:rgba(232,213,196,0.06)}
+.testimonio-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.testimonio-estrellas{color:var(--cafe);font-size:0.85rem;margin-bottom:16px;letter-spacing:2px}
+.testimonio-card blockquote{
+  font-family:var(--font-serif);font-style:italic;font-size:1rem;
+  color:var(--cacao);line-height:1.55;margin-bottom:16px
+}
+.testimonio-autor{display:flex;align-items:center;gap:12px}
+.testimonio-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg, var(--almendra), var(--salvia-light));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;color:var(--cacao);font-weight:500
+}
+.testimonio-autor .name{font-size:0.85rem;font-weight:500;color:var(--cacao)}
+.testimonio-autor .handle{font-size:0.75rem;color:var(--text-light)}
+/* ───────────── CTA ───────────── */
+#cta{
+  text-align:center;padding:120px 24px;
+  background:linear-gradient(180deg, var(--off-white) 0%, var(--crema) 40%, var(--crema-dark) 100%);
+  position:relative;overflow:hidden
+}
+[data-theme="dark"] #cta{background:linear-gradient(180deg, var(--crema-dark) 0%, var(--off-white) 40%, var(--crema-dark) 100%)}
+#cta::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:1px;background:linear-gradient(90deg, transparent, var(--almendra), transparent)
+}
+.cta-inner{max-width:640px;margin:0 auto;position:relative;z-index:2}
+.cta-inner h2{
+  font-family:var(--font-serif);font-size:clamp(2rem,3.5vw,3rem);
+  font-weight:600;color:var(--cacao);line-height:1.15;
+  letter-spacing:-0.02em;margin-bottom:16px
+}
+.cta-inner p{color:var(--text-light);font-size:1.05rem;margin-bottom:36px;line-height:1.6}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+/* ───────────── FOOTER ───────────── */
+footer{
+  padding:48px 24px 32px;background:var(--cacao);color:var(--crema)
+}
+[data-theme="dark"] footer{background:var(--crema-dark)}
+.footer-inner{max-width:var(--max-w);margin:0 auto}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px
+}
+.footer-brand .logo{color:var(--crema);font-size:1.25rem;display:block;margin-bottom:12px}
+[data-theme="dark"] .footer-brand .logo{color:var(--cacao)}
+.footer-brand p{font-size:0.85rem;opacity:0.7;line-height:1.6;max-width:280px}
+.footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:16px;opacity:0.9}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:10px}
+.footer-col ul a{font-size:0.88rem;opacity:0.65;transition:var(--transition)}
+.footer-col ul a:hover{opacity:1}
+.footer-bottom{
+  padding-top:24px;border-top:1px solid rgba(253,246,237,0.1);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px
+}
+.footer-bottom p{font-size:0.8rem;opacity:0.5}
+.footer-socials{display:flex;gap:16px}
+.footer-socials a{opacity:0.5;transition:var(--transition);font-size:0.88rem}
+.footer-socials a:hover{opacity:1}
+/* ───────────── ANIMATIONS ───────────── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+/* ───────────── RESPONSIVE ───────────── */
+@media(max-width:900px){
+  .nav-links{display:none;position:fixed;top:var(--nav-h);left:0;right:0;
+    background:var(--off-white);flex-direction:column;padding:24px;
+    border-bottom:1px solid var(--almendra);gap:20px
+  }
+  .nav-links.open{display:flex}
+  .mobile-toggle{display:block}
+  .hero-grid{grid-template-columns:1fr;gap:40px;text-align:center}
+  .hero-sub{margin:0 auto 36px}
+  .hero-actions{justify-content:center}
+  .hero-image{order:-1}
+  .hero-img-wrapper{max-width:320px;margin:0 auto}
+  .propuesta-grid{grid-template-columns:1fr}
+  .valor-card:first-child{grid-column:auto;grid-row:auto}
+  .valor-card:nth-child(2),.valor-card:nth-child(3){grid-column:auto}
+  .historia-grid{grid-template-columns:1fr;gap:40px}
+  .historia-imagen{order:-1;max-width:400px;margin:0 auto}
+  .productos-grid{grid-template-columns:1fr 1fr}
+  .testimonios-grid{grid-template-columns:1fr 1fr}
+  .local-grid{grid-template-columns:1fr;gap:40px}
+  .local-img{order:-1;max-width:450px;margin:0 auto}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:600px){
+  section{padding:72px 20px}
+  .productos-grid{grid-template-columns:1fr}
+  .testimonios-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}
+  .filosofia-frame{padding:48px 24px}
+  .cta-actions{flex-direction:column;align-items:center}
+  .btn-primary,.btn-secondary{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">Cocoa de Cacao</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#propuesta">Lo que nos hace distintos</a></li>
+      <li><a href="#productos">Postres</a></li>
+      <li><a href="#historia">Historia</a></li>
+      <li><a href="#local">Visítanos</a></li>
+      <li><a href="#cta" class="nav-cta">Haz tu pedido</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="theme-btn" id="themeToggle" aria-label="Cambiar tema">☀</button>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero">
+  <div class="hero-grid">
+    <div class="hero-content">
+      <div class="hero-badge">Repostería artesanal · Puebla</div>
+      <h1>
+        Postres que<br>
+        <em>sí</em> se antojan <span class="ampersand">&amp;</span><br>
+        te hacen bien
+      </h1>
+      <p class="hero-sub">
+        Hechos sin azúcar añadida, con ingredientes reales y el mismo cariño de siempre.
+        Porque el placer y el cuidado no tienen por qué estar peleados.
+      </p>
+      <div class="hero-actions">
+        <a href="#productos" class="btn-primary">🍰 Explorar postres</a>
+        <a href="#historia" class="btn-secondary">Conoce nuestra historia</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-img-wrapper">
+        <div class="hero-img-placeholder">
+          <div class="cacao-art"></div>
+          <div class="plate"><div class="plate-inner"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">Desliza</div>
+</section>
+
+<!-- ═══ PROPUESTA DE VALOR ═══ -->
+<section id="propuesta">
+  <div class="section-inner">
+    <div class="section-label reveal">Lo que nos hace distintos</div>
+    <h2 class="section-title reveal reveal-delay-1">Cinco razones para<br>dejarte antojar</h2>
+    <div class="propuesta-grid">
+      <div class="valor-card reveal">
+        <div class="valor-icon">🍫</div>
+        <h3>Cero azúcar añadida,<br>cien por ciento sabor</h3>
+        <p>Endulzamos con ingredientes nobles —fruta, dátil, stevia— no con jarabes procesados. Nadie nota la diferencia. Tu glucosa sí.</p>
+      </div>
+      <div class="valor-card reveal reveal-delay-1">
+        <div class="valor-icon">🌿</div>
+        <h3>Pensado para quienes cuidan su alimentación</h3>
+        <p>Amigable con diabetes, keto y estilos de vida conscientes. Cada receta está desarrollada con un nutricionista.</p>
+      </div>
+      <div class="valor-card reveal reveal-delay-2">
+        <div class="valor-icon">🧈</div>
+        <h3>Ingredientes seleccionados, sin atajos</h3>
+        <p>Cacao de comercio justo, harinas de almendra y coco, mantequilla real. Nada de lo que no puedas pronunciar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HISTORIA ═══ -->
+<section id="historia">
+  <div class="section-inner historia-grid">
+    <div class="historia-texto">
+      <div class="section-label reveal">Nuestra historia</div>
+      <h2 class="section-title reveal reveal-delay-1">Nació de un<br>antoj&#111;o incomprendido</h2>
+      <div class="reveal reveal-delay-2">
+        <p>
+          Todo empezó en una cocina de Cholula, cuando un familiar cercano —recién diagnosticado con diabetes— 
+          pidió un postre. No había opciones. Lo saludable sabía a castigo y lo rico estaba prohibido.
+        </p>
+        <p>
+          Esa tarde nació la obsesión: demostrar que se puede tener un brownie húmedo, un cheesecake cremoso, 
+          una dona esponjosa… sin azúcar añadida. Sin sentir que estás renunciando a nada.
+        </p>
+      </div>
+      <div class="firma reveal reveal-delay-3">
+        — Porque cuidarse no debería saber a nada.
+      </div>
+    </div>
+    <div class="historia-imagen reveal reveal-delay-1">
+      <div class="decoration"></div>
+      <div class="heart-icon">♡</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRODUCTOS ═══ -->
+<section id="productos">
+  <div class="section-inner">
+    <div class="productos-header">
+      <div class="section-label reveal">Nuestra selección</div>
+      <h2 class="section-title reveal reveal-delay-1">Postres que enamoran<br>a la primera mordida</h2>
+      <p class="section-desc reveal reveal-delay-2">Cada uno existe porque alguien lo pidió. Porque un antojo no entiende de restricciones.</p>
+    </div>
+    <div class="productos-grid">
+      <div class="producto-card reveal">
+        <div class="producto-img"><div class="pattern"></div>🧁</div>
+        <div class="producto-body">
+          <span class="categoria">Clásico reinventado</span>
+          <h3>Cheesecake de Fresa</h3>
+          <p>Base de almendra y coco, crema ligera, fresas naturales. Sin azúcar, con todo el sabor.</p>
+          <span class="tag">Keto</span><span class="tag">Sin azúcar</span>
+        </div>
+      </div>
+      <div class="producto-card reveal reveal-delay-1">
+        <div class="producto-img"><div class="pattern"></div>🍫</div>
+        <div class="producto-body">
+          <span class="categoria">Imperdible</span>
+          <h3>Brownie de Cacao Profundo</h3>
+          <p>Húmedo, intenso, con trozos de chocolate real. El favorito de quienes juran que lo saludable no sabe bien.</p>
+          <span class="tag">Keto</span><span class="tag">Sin gluten</span>
+        </div>
+      </div>
+      <div class="producto-card reveal reveal-delay-2">
+        <div class="producto-img"><div class="pattern"></div>🍪</div>
+        <div class="producto-body">
+          <span class="categoria">Para el antojo express</span>
+          <h3>Galleta de Chispas</h3>
+          <p>Crujiente por fuera, suave por dentro. Con chispas de chocolate sin azúcar. Acompaña el café perfecto.</p>
+          <span class="tag">Sin azúcar</span>
+        </div>
+      </div>
+      <div class="producto-card reveal">
+        <div class="producto-img"><div class="pattern"></div>🍩</div>
+        <div class="producto-body">
+          <span class="categoria">Versión saludable</span>
+          <h3>Dona Horneada</h3>
+          <p>Esponjosa, cubierta de chocolate. Horneada, no frita. Sabe a merienda de fin de semana sin el remordimiento.</p>
+          <span class="tag">Keto</span><span class="tag">Horneada</span>
+        </div>
+      </div>
+      <div class="producto-card reveal reveal-delay-1">
+        <div class="producto-img"><div class="pattern"></div>🥧</div>
+        <div class="producto-body">
+          <span class="categoria">Tradicional</span>
+          <h3>Tarta de Limón</h3>
+          <p>Merengue ligero, crema cítrica, base crujiente. El postre que tu abuela aprobaría —sin el azúcar.</p>
+          <span class="tag">Sin azúcar</span><span class="tag">Sin gluten</span>
+        </div>
+      </div>
+      <div class="producto-card reveal reveal-delay-2">
+        <div class="producto-img"><div class="pattern"></div>☕</div>
+        <div class="producto-body">
+          <span class="categoria">Acompañante</span>
+          <h3>Latte de Canela</h3>
+          <p>Leche de almendra, espresso doble, canela y un toque de vainilla. Sin azúcar. Para bajar el postre… o el antojo.</p>
+          <span class="tag">Keto</span><span class="tag">Sin azúcar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FILOSOFÍA ═══ -->
+<section id="filosofia">
+  <div class="section-inner">
+    <div class="filosofia-frame reveal">
+      <blockquote>
+        “El placer y el cuidado no tienen por qué estar peleados.<br>
+        Un postre puede ser delicioso <em>y</em> hacerte bien.<br>
+        Eso no es magia. Es cocinar con intención.”
+      </blockquote>
+      <p class="attribution">— Filosofía Cocoa de Cacao</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LOCAL ═══ -->
+<section id="local">
+  <div class="section-inner local-grid">
+    <div class="local-info reveal">
+      <div class="section-label">Hecho en Puebla</div>
+      <h3>Aquí, en tu colonia,<br>con cariño de la casa</h3>
+      <p>
+        No somos una cadena ni una franquicia. Somos una cocina de barrio que se volvió 
+        un punto de encuentro para quienes quieren darse un gusto sin culpa.
+      </p>
+      <p>
+        Cada postre se hace el mismo día, en lotes pequeños, con ingredientes que 
+        compramos personalmente. Porque lo artesanal no es una etiqueta: es la forma en que trabajamos.
+      </p>
+      <div class="local-direccion">
+        <p class="label">📍 Visítanos</p>
+        <p class="addr">Lomas de Angelópolis — Puebla, Pue.</p>
+        <p class="note">Pedidos con 24 h de anticipación.</p>
+      </div>
+    </div>
+    <div class="local-img reveal reveal-delay-1">
+      <div class="map-markers">
+        <span>📍</span>
+        <span>📍</span>
+        <span>📍</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section id="testimonios">
+  <div class="section-inner">
+    <div class="productos-header">
+      <div class="section-label reveal">Lo que dicen</div>
+      <h2 class="section-title reveal reveal-delay-1">Más vale probarlo<br>que creerle a uno</h2>
+    </div>
+    <div class="testimonios-grid">
+      <div class="testimonio-card reveal">
+        <div class="testimonio-estrellas">★★★★★</div>
+        <blockquote>“Por fin un postre que puedo comer sin culpa. Soy diabética y esto cambió mis tardes de café. El cheesecake de fresa es una locura.”</blockquote>
+        <div class="testimonio-autor">
+          <div class="testimonio-avatar">MR</div>
+          <div>
+            <div class="name">María R.</div>
+            <div class="handle">Cliente recurrente</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonio-card reveal reveal-delay-1">
+        <div class="testimonio-estrellas">★★★★★</div>
+        <blockquote>“Pensé que sería otro postre ‘dietético’ que sabe a cartón. Me encantó. El brownie es el mejor que he probado, con o sin azúcar.”</blockquote>
+        <div class="testimonio-autor">
+          <div class="testimonio-avatar">DG</div>
+          <div>
+            <div class="name">Daniel G.</div>
+            <div class="handle">Escéptico convencido</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonio-card reveal reveal-delay-2">
+        <div class="testimonio-estrellas">★★★★★</div>
+        <blockquote>“Pido cada semana. El latte de canela + galleta de chispas es mi combo infalible. No sé cómo le hacen pero no parece postre saludable.”</blockquote>
+        <div class="testimonio-autor">
+          <div class="testimonio-avatar">AL</div>
+          <div>
+            <div class="name">Ana L.</div>
+            <div class="handle">Cliente frecuente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <h2>¿Ya se te antojó?</h2>
+    <p>
+      No te preocupes, es completamente normal.<br>
+      Haz tu pedido, pásate por Lomas de Angelópolis o síguenos para saber qué estamos horneando hoy.
+    </p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary">📱 Haz tu pedido</a>
+      <a href="#" class="btn-secondary">📸 Síguenos en Instagram</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo">Cocoa de Cacao</span>
+        <p>Postres saludables que se sienten como un verdadero antojo. Hechos en Puebla, con ingredientes reales y cero azúcar añadida.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Tienda</h4>
+        <ul>
+          <li><a href="#productos">Postres</a></li>
+          <li><a href="#">Bebidas</a></li>
+          <li><a href="#">Paquetes</a></li>
+          <li><a href="#">Menú semanal</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Nosotros</h4>
+        <ul>
+          <li><a href="#historia">Historia</a></li>
+          <li><a href="#filosofia">Filosofía</a></li>
+          <li><a href="#local">Ubicación</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Más</h4>
+        <ul>
+          <li><a href="#">Preguntas frecuentes</a></li>
+          <li><a href="#">Política de envíos</a></li>
+          <li><a href="#">Aviso de privacidad</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Cocoa de Cacao. Todos los derechos reservados.</p>
+      <div class="footer-socials">
+        <a href="#">Instagram</a>
+        <a href="#">Facebook</a>
+        <a href="#">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+// ── Mobile nav toggle ──
+document.getElementById('mobileToggle').addEventListener('click', function(){
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+// ── Close nav on link click (mobile) ──
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+// ── Theme toggle ──
+const themeToggle = document.getElementById('themeToggle');
+let dark = false;
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  dark = true;
+  document.documentElement.setAttribute('data-theme','dark');
+  themeToggle.textContent = '☾';
+}
+if (localStorage.getItem('theme') === 'dark') {
+  dark = true;
+  document.documentElement.setAttribute('data-theme','dark');
+  themeToggle.textContent = '☾';
+} else if (localStorage.getItem('theme') === 'light') {
+  dark = false;
+  document.documentElement.removeAttribute('data-theme');
+  themeToggle.textContent = '☀';
+}
+themeToggle.addEventListener('click', () => {
+  dark = !dark;
+  if (dark) {
+    document.documentElement.setAttribute('data-theme','dark');
+    themeToggle.textContent = '☾';
+    localStorage.setItem('theme','dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeToggle.textContent = '☀';
+    localStorage.setItem('theme','light');
+  }
+});
+
+// ── Scroll reveal (IntersectionObserver) ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Nav shadow on scroll ──
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('nav');
+  if (window.scrollY > 40) {
+    nav.style.boxShadow = 'var(--shadow-sm)';
+  } else {
+    nav.style.boxShadow = 'none';
+  }
+  lastScroll = window.scrollY;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# OpenClaw internal
+.openclaw/
+memory/
+
+# Trading bot - no commitear API keys
+trading_bot/.env
+trading_bot/venv/
+trading_bot/logs/
+trading_bot/__pycache__/
+
+# Generated images
+restaurant-desktop.png
+restaurant-mobile.png

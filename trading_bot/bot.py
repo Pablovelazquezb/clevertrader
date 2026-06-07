@@ -161,9 +161,9 @@ def ema(series: pd.Series, period: int) -> pd.Series:
 def get_bars(symbol: str, params: dict, is_crypto: bool = False) -> Optional[pd.DataFrame]:
     """Obtiene velas según el régimen actual, suficientes para EMAs y volumen."""
     try:
-        limit = max(params["lookback"], 50)  # mínimo 50 velas para indicadores
+        limit = max(params["lookback"], 60)  # mínimo 60 velas para indicadores
         now = datetime.now(EASTERN)
-        extra = limit * 5 + 120  # más holgado
+        extra = limit * 6 + 240  # más holgado (era *5 +120)
         start = now - timedelta(minutes=extra)
 
         if is_crypto:
@@ -171,7 +171,7 @@ def get_bars(symbol: str, params: dict, is_crypto: bool = False) -> Optional[pd.
                 symbol_or_symbols=symbol,
                 timeframe=TimeFrame.Minute,
                 start=start.isoformat(),
-                limit=limit * 4,
+                limit=limit * 6,  # más datos (era *4)
             )
             bars = crypto_data.get_crypto_bars(req)
         else:
@@ -270,6 +270,12 @@ def evaluate_sell_signal(df: pd.DataFrame, entry_price: float, current_price: fl
 
 # ── Cuenta y posiciones ──────────────────────────────────────────
 
+def is_crypto_symbol(symbol: str) -> bool:
+    """Checa si un símbolo es crypto (vs stock)."""
+    # Crypto watchlist usa el formato "XXX/USD"
+    return "/" in symbol
+
+
 def get_account():
     return trade_client.get_account()
 
@@ -298,38 +304,40 @@ def current_positions_dict() -> dict:
 
 # ── Órdenes ──────────────────────────────────────────────────────
 
-def place_buy(symbol: str, notional: float, extended: bool = False):
+def place_buy(symbol: str, notional: float, extended: bool = False, is_crypto: bool = False):
     try:
+        tif = TimeInForce.GTC if is_crypto else TimeInForce.DAY
         req = MarketOrderRequest(
             symbol=symbol,
             notional=notional,
             side=OrderSide.BUY,
-            time_in_force=TimeInForce.DAY,
+            time_in_force=tif,
             extended_hours=extended,
         )
         order = trade_client.submit_order(req)
-        log.info(f"🟢 COMPRA {symbol} por ${notional:.2f} {'[EXT]' if extended else ''} → orden {order.id}")
+        log.info(f"🟢 COMPRA {symbol} por ${notional:.2f} {'[CRYPTO]' if is_crypto else ('[EXT]' if extended else '')} → orden {order.id}")
         return order
     except Exception as e:
         log.error(f"❌ Error comprando {symbol}: {e}")
         return None
 
 
-def place_sell_all(symbol: str, qty: float, extended: bool = False):
+def place_sell_all(symbol: str, qty: float, extended: bool = False, is_crypto: bool = False):
     try:
         qty = math.floor(qty) if qty >= 1 else round(qty, 4)
         if qty <= 0:
             log.warning(f"⚠️ Cantidad inválida para vender {symbol}: {qty}")
             return None
+        tif = TimeInForce.GTC if is_crypto else TimeInForce.DAY
         req = MarketOrderRequest(
             symbol=symbol,
             qty=qty,
             side=OrderSide.SELL,
-            time_in_force=TimeInForce.DAY,
+            time_in_force=tif,
             extended_hours=extended,
         )
         order = trade_client.submit_order(req)
-        log.info(f"🔴 VENTA {symbol} ({qty} accs) {'[EXT]' if extended else ''} → orden {order.id}")
+        log.info(f"🔴 VENTA {symbol} ({qty} accs) {'[CRYPTO]' if is_crypto else ('[EXT]' if extended else '')} → orden {order.id}")
         return order
     except Exception as e:
         log.error(f"❌ Error vendiendo {symbol}: {e}")
@@ -349,12 +357,13 @@ def run_once():
 
     acc = get_account()
     bp = float(acc.buying_power)
+    cash = float(acc.cash)
     portfolio_value = float(acc.portfolio_value)
     positions = current_positions_dict()
     open_symbols = set(positions.keys())
 
     log.info(f"═" * 55)
-    log.info(f"🌓 Régimen: {regime.upper()} | Portfolio: ${portfolio_value:.2f} | BP: ${bp:.2f}")
+    log.info(f"🌓 Régimen: {regime.upper()} | Portfolio: ${portfolio_value:.2f} | BP: ${bp:.2f} | Cash: ${cash:.2f}")
     log.info(f"📊 Posiciones activas: {len(positions)}")
     for sym, p in positions.items():
         gain = (p["current_price"] - p["avg_entry"]) / p["avg_entry"] * 100
@@ -379,14 +388,17 @@ def run_once():
         sell, reason = evaluate_sell_signal(df, entry_price, current_price, stop_price, params)
         if sell:
             log.info(f"⚡ VENTA {sym}: {reason} (gain: {(current_price-entry_price)/entry_price*100:+.2f}%)")
-            place_sell_all(sym, p["qty"], extended=extended)
+            place_sell_all(sym, p["qty"], extended=extended, is_crypto=is_crypto_symbol(sym))
             trailing_stops.pop(sym, None)
 
     # ── COMPRAS (stocks) ──
     if regime in ("regular", "premarket", "afterhours"):
         if len(positions) < params["max_positions"]:
-            alloc = min(bp * params["alloc_per_trade"],
-                        bp / (params["max_positions"] - len(positions)))
+            alloc = min(
+                cash * params["alloc_per_trade"],
+                cash / (params["max_positions"] - len(positions)),
+                bp * params["alloc_per_trade"]
+            )
             alloc = max(alloc, 1.0)
 
             for sym in STOCK_WATCHLIST:
@@ -412,8 +424,11 @@ def run_once():
     if regime == "crypto":
         log.info("🌙 Modo crypto 24/7 activo — buscando entradas en crypto...")
         if len(positions) < params["max_positions"]:
-            alloc = min(bp * params["alloc_per_trade"],
-                        bp / (params["max_positions"] - len(positions)))
+            alloc = min(
+                cash * params["alloc_per_trade"],
+                cash / (params["max_positions"] - len(positions)),
+                bp * params["alloc_per_trade"]
+            )
             alloc = max(alloc, 5.0)  # mínimo $5 para crypto
             for sym in CRYPTO_WATCHLIST:
                 if sym in open_symbols:
@@ -425,7 +440,7 @@ def run_once():
                     continue
                 if evaluate_buy_signal(df, params):
                     log.info(f"🚀 COMPRA {sym} (crypto) — ${alloc:.2f}")
-                    order = place_buy(sym, alloc, extended=False)
+                    order = place_buy(sym, alloc, extended=False, is_crypto=True)
                     if order:
                         time.sleep(1)
                         positions = current_positions_dict()

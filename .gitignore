@@ -3,6 +3,10 @@
 memory/
 
 # Trading bot - no commitear API keys
+
+# Agent dashboard
+agent-dashboard/node_modules/
+agent-dashboard/.next/
 trading_bot/.env
 trading_bot/venv/
 trading_bot/logs/

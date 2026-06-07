@@ -102,50 +102,50 @@ CRYPTO_WATCHLIST = [
 # Parámetros por régimen
 PARAMS = {
     "regular": {
-        "lookback": 25,
-        "ema_fast": 9,
-        "ema_slow": 20,
-        "volume_mult": 1.3,
-        "trailing_stop": 2.5,
-        "take_profit": 5.0,
-        "max_positions": 3,
-        "alloc_per_trade": 0.30,
+        "lookback": 20,
+        "ema_fast": 7,        # EMAs más rápidas (era 9)
+        "ema_slow": 18,       # (era 20)
+        "volume_mult": 1.0,    # cualquier volumen sobre promedio (era 1.3)
+        "trailing_stop": 4.0,  # más espacio (era 2.5)
+        "take_profit": 3.5,    # toma ganancias más rápido (era 5.0)
+        "max_positions": 5,    # más posiciones (era 3)
+        "alloc_per_trade": 0.40,  # más capital por trade (era 30%)
         "use_extended_hours": False,
         "tf": "5Min",
     },
     "premarket": {
-        "lookback": 20,
-        "ema_fast": 9,
-        "ema_slow": 20,
-        "volume_mult": 0.8,  # menos volumen
-        "trailing_stop": 3.5,  # stops más amplios
-        "take_profit": 4.0,
-        "max_positions": 2,
-        "alloc_per_trade": 0.15,  # posiciones más chicas
+        "lookback": 18,
+        "ema_fast": 7,
+        "ema_slow": 18,
+        "volume_mult": 0.7,
+        "trailing_stop": 4.5,
+        "take_profit": 3.0,
+        "max_positions": 3,    # más (era 2)
+        "alloc_per_trade": 0.25,  # más (era 0.15)
         "use_extended_hours": True,
-        "tf": "15Min",  # timeframe más largo
+        "tf": "15Min",
     },
     "afterhours": {
-        "lookback": 20,
-        "ema_fast": 9,
-        "ema_slow": 20,
-        "volume_mult": 0.8,
-        "trailing_stop": 3.5,
-        "take_profit": 4.0,
-        "max_positions": 2,
-        "alloc_per_trade": 0.15,
+        "lookback": 18,
+        "ema_fast": 7,
+        "ema_slow": 18,
+        "volume_mult": 0.7,
+        "trailing_stop": 4.5,
+        "take_profit": 3.0,
+        "max_positions": 3,
+        "alloc_per_trade": 0.25,
         "use_extended_hours": True,
         "tf": "15Min",
     },
     "crypto": {
-        "lookback": 30,
-        "ema_fast": 12,
-        "ema_slow": 26,
-        "volume_mult": 1.0,
-        "trailing_stop": 5.0,  # crypto es más volátil
-        "take_profit": 8.0,
-        "max_positions": 2,
-        "alloc_per_trade": 0.15,
+        "lookback": 25,
+        "ema_fast": 8,        # más rápido (era 12)
+        "ema_slow": 18,       # más rápido (era 26)
+        "volume_mult": 0.9,
+        "trailing_stop": 6.0,  # más espacio (era 5.0)
+        "take_profit": 5.0,    # más rápido (era 8.0)
+        "max_positions": 3,    # más (era 2)
+        "alloc_per_trade": 0.30,  # más (era 0.15)
         "use_extended_hours": True,
         "tf": "15Min",
     },
@@ -236,15 +236,11 @@ def evaluate_buy_signal(df: pd.DataFrame, params: dict) -> bool:
     if ema_fast.iloc[-1] <= ema_slow.iloc[-1]:
         return False
 
-    # Volumen suficiente (si hay datos de volumen para comparar; crypto free tier no da volumen real)
-    if pd.notna(avg_vol_val) and avg_vol_val > 1 and last_vol < avg_vol_val * params["volume_mult"]:
+    # Volumen suficiente — criterio más suave
+    if pd.notna(avg_vol_val) and avg_vol_val > 10 and last_vol < avg_vol_val * params["volume_mult"]:
         return False
 
-    # Extra para regular hours: cerca del high del día
-    if not params["use_extended_hours"] and "high" in df.columns:
-        daily_high = df["high"].iloc[-1]
-        if last < daily_high * 0.997:
-            return False
+    # Sin restricción de high del día — queremos más entradas
 
     return True
 

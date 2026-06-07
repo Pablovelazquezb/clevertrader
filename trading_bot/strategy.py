@@ -31,16 +31,16 @@ WATCHLIST = [
     "SMH", "SOXL", "TQQQ", "BITO",
 ]
 
-# ── Parámetros ───────────────────────────────────────────────────
-TIMEFRAME = "5Min"        # velas de 5 minutos
-LOOKBACK = 25             # cuántas velas cargar
+# ── Parámetros (🔥 agresivos) ────────────────────────────────────
+TIMEFRAME = "5Min"
+LOOKBACK = 25
 EMA_FAST = 9
 EMA_SLOW = 20
-VOLUME_MULT = 1.3         # volumen mínimo vs promedio
-TRAILING_STOP_PCT = 2.5   # stop loss trailing %
-TAKE_PROFIT_PCT = 5.0     # take profit %
-MAX_POSITIONS = 3
-ALLOC_PER_TRADE = 0.30    # 30% del buying power por trade
+VOLUME_MULT = 1.0         # volumen ≥ promedio (era 1.3)
+TRAILING_STOP_PCT = 3.5   # stop más amplio (era 2.5)
+TAKE_PROFIT_PCT = 3.5     # take profit más rápido (era 5.0)
+MAX_POSITIONS = 5          # hasta 5 posiciones (era 3)
+ALLOC_PER_TRADE = 0.40    # 40% del buying power (era 30%)
 
 EASTERN = pytz.timezone("US/Eastern")
 

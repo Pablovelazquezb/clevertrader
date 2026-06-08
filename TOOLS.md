@@ -29,7 +29,10 @@ Things like:
 - **API:** http://2.25.183.239:3456
 - **Servicio:** `gaas-api.service` (systemd)
 - **Proxy Vercel → VPS:** `/api/gaas/[...path]`
-- **Repo:** `Pablovelazquezb/apexmont-gaas`
+- **Repo GaaS:** `Pablovelazquezb/apexmont-gaas`
+- **Repo Agent Dashboard:** `Pablovelazquezb/apexmont-agent-dashboard`
+- **GitHub Token:** (almacenado localmente en `~/.git-credentials`)
+- **GitHub Email:** `pablovelazquezbremont@gmail.com`
 - **Ruta en VPS:** `/root/apexmont-gaas`
 - **SSH:** `ssh root@2.25.183.239`
 - **Pass:** `h;jhU;yb0y.RDXo?`

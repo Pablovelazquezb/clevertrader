@@ -21,6 +21,19 @@ Things like:
 - living-room → Main area, 180° wide angle
 - front-door → Entrance, motion-triggered
 
+### GaaS — Infraestructura
+
+- **VPS:** Hostinger, Ubuntu 24.04, Node 24
+- **IP:** 2.25.183.239
+- **Dashboard (Vercel):** https://apexmont-dashboard.vercel.app
+- **API:** http://2.25.183.239:3456
+- **Servicio:** `gaas-api.service` (systemd)
+- **Proxy Vercel → VPS:** `/api/gaas/[...path]`
+- **Repo:** `Pablovelazquezb/apexmont-gaas`
+- **Ruta en VPS:** `/root/apexmont-gaas`
+- **SSH:** `ssh root@2.25.183.239`
+- **Pass:** `h;jhU;yb0y.RDXo?`
+
 ### SSH
 
 - home-server → 192.168.1.100, user: admin
